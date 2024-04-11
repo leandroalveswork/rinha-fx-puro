@@ -1,5 +1,36 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators #-}
+
 module ClientesApiLib where
 
-type ClientesApi = "clientes/:id/transacoes" :> Post '[JSON] SaldoVM
-              :<|> "clientes/:id/extrato" :> Get '[JSON] ExtratoVM
+import Control.Monad.Except
+import Control.Monad.Reader
+import Data.Aeson
+import Data.Aeson.Types
+import Data.Attoparsec.ByteString
+import Data.ByteString (ByteString)
+import Data.List
+import Data.Maybe
+import Data.String.Conversions
+import Data.Time.Calendar
+import GHC.Generics
+import Network.Wai
+import Network.Wai.Handler.Warp
+import Servant
 
+type ClientesApi = "clientes" :> Capture "id" Integer :> "transacoes"
+                         :> ReqBody '[JSON] String
+                         :> Post '[JSON] String
+              :<|> "clientes" :> Capture "id" Integer :> "extrato"
+                         :> Get '[JSON] String
+
+clientesServidor :: Server ClientesApi
+clientesServidor = (\a b -> return "Transacoes dummy")
+              :<|> (\a   -> return "Extrato dummy"   )

@@ -1,7 +1,10 @@
 module Main where
 
-import Servant          (serve)
-import ClientesApiLib (ClientesApi, clientesServidor)
+import Network.Wai
+import Network.Wai.Handler.Warp
+import Servant
+
+import ClientesApiLib           (ClientesApi, clientesServidor)
 
 proxyServidor :: Proxy ClientesApi
 proxyServidor = Proxy
