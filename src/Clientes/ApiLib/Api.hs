@@ -8,14 +8,17 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-module ClientesApiLib where
+module Clientes.ApiLib.Api
+  ( ClientesApi
+  , clientesServidor
+  ) where
 
 import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Attoparsec.ByteString
-import Data.ByteString (ByteString)
+import Data.ByteString                         (ByteString)
 import Data.List
 import Data.Maybe
 import Data.String.Conversions
@@ -24,8 +27,11 @@ import GHC.Generics
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
-import TransacoesVMsLib (InputTransacao, Saldo)
-import ExtratoVMsLib (ExtratoNaHora)
+import Clientes.ViewModelsLib.ExtratoNaHoraVM  (ExtratoNaHora)
+import Clientes.ViewModelsLib.InputTransacaoVM (InputTransacao)
+import Clientes.ViewModelsLib.SaldoVM          (Saldo)
+import Clientes.ApiLib.PostarNova              (postarNova) 
+import Clientes.ApiLib.ObterExtrato            (obterExtrato) 
 
 type ClientesApi = "clientes" :> Capture "id" Integer :> "transacoes"
                          :> ReqBody '[JSON] InputTransacao
@@ -34,6 +40,7 @@ type ClientesApi = "clientes" :> Capture "id" Integer :> "transacoes"
                          :> Get '[JSON] ExtratoNaHora
 
 clientesServidor :: Server ClientesApi
-clientesServidor = (\a b -> return "Transacoes dummy")
-              :<|> (\a   -> return "Extrato dummy"   )
+clientesServidor = postarNova
+              :<|> obterExtrato
+
 

@@ -4,7 +4,7 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 
-import ClientesApiLib           (ClientesApi, clientesServidor)
+import Clientes.ApiLib.Api           (ClientesApi, clientesServidor)
 
 proxyServidor :: Proxy ClientesApi
 proxyServidor = Proxy

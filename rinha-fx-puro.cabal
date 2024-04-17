@@ -17,7 +17,7 @@ author:             leandroalveswork
 maintainer:         leandroprogramadoruxdesign@gmail.com
 
 library
-    exposed-modules:  ClientesApiLib
+    exposed-modules:  Clientes.ApiLib.Api
     build-depends:    base ^>= 4.16.4.0
                       , text >= 2.0.2
                       , aeson >= 2.2.1.0
