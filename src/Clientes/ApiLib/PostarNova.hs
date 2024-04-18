@@ -18,6 +18,7 @@ import Servant
 import Servant.Client
 import Clientes.ViewModelsLib.InputTransacaoVM (InputTransacao, valor, tipo, descricao)
 import Clientes.ViewModelsLib.SaldoVM          (Saldo)
+import Clientes.ViewModelsLib.TipoTransacaoVM  (TipoTransacao, sinalDe)
 
 type DBConnectionString = ByteString
 
@@ -27,7 +28,7 @@ postarNova conns idCliente inptTr = fmap (map fromOnly) . liftIO $
                                         query conn
                                           "exec SP_NOVA_TRANSACAO ? ? ? ?"
                                           ( idCliente
-                                          , valor inptTr 
+                                          , valor inptTr * sinalDe tipo
                                           , show.tipo inptTr
                                           , descricao inptTr
                                           )

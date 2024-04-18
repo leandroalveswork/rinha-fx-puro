@@ -24,6 +24,8 @@ import Data.Maybe
 import Data.String.Conversions
 import Data.Time.Calendar
 import GHC.Generics
+import Data.Pool
+import Database.PostgreSQL.Simple
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
@@ -39,8 +41,8 @@ type ClientesApi = "clientes" :> Capture "id" Integer :> "transacoes"
               :<|> "clientes" :> Capture "id" Integer :> "extrato"
                          :> Get '[JSON] ExtratoNaHora
 
-clientesServidor :: Server ClientesApi
-clientesServidor = postarNova
-              :<|> obterExtrato
+clientesServidor :: Pool Connection -> Server ClientesApi
+clientesServidor conns = postarNova conns
+                    :<|> obterExtrato conns
 
 
