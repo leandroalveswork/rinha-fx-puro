@@ -21,14 +21,14 @@ import Clientes.ViewModelsLib.SaldoVM          (Saldo)
 
 type DBConnectionString = ByteString
 
-postarNova :: Integer -> InputTransacao -> Handler Saldo
-postarNova idCliente inptTr = fmap (map fromOnly) . liftIO $
-                      withResource conns $ \conn ->
-                        query conn
-                          "exec SP_NOVA_TRANSACAO ? ? ? ?"
-                          ( idCliente
-                          , valor inptTr 
-                          , show.tipo inptTr
-                          , descricao inptTr
-                          )
+postarNova :: Pool Connection -> Integer -> InputTransacao -> Handler Saldo
+postarNova conns idCliente inptTr = fmap (map fromOnly) . liftIO $
+                                      withResource conns $ \conn ->
+                                        query conn
+                                          "exec SP_NOVA_TRANSACAO ? ? ? ?"
+                                          ( idCliente
+                                          , valor inptTr 
+                                          , show.tipo inptTr
+                                          , descricao inptTr
+                                          )
 
