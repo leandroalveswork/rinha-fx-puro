@@ -17,7 +17,7 @@ appRinha :: Pool Connection -> Application
 appRinha conns = serve proxyServidor (clientesServidor conns)
 
 connstr :: DBConnectionString
-connstr = fromString "Host=localhost;Port=5432;Database=rinhafx;User ID=root;Password=1234"
+connstr = fromString "host=localhost port=5432 dbname=rinhafx user=rinha1234 password=1234"
 
 main :: IO ()
 main = do
