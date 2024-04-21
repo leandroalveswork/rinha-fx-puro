@@ -1,7 +1,9 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Clientes.ViewModelsLib.ExtratoNaHoraVM
-  ( ExtratoNaHora 
+  ( ExtratoNaHora (ExtratoNaHora)
+  , saldo
+  , ultimas_transacoes
   ) where
 
 import Data.Time

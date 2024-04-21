@@ -1,7 +1,10 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Clientes.ViewModelsLib.SaldoNaHoraVM
-  ( SaldoNaHora
+  ( SaldoNaHora(SaldoNaHora)
+  , total
+  , limite
+  , data_extrato
   ) where
 
 import Data.Time
@@ -12,8 +15,8 @@ import GHC.Generics
 
 
 data SaldoNaHora = SaldoNaHora
-  { total        :: Integer
-  , limite       :: Integer
+  { total        :: Int
+  , limite       :: Int
   , data_extrato :: UTCTime
   } deriving Generic
 

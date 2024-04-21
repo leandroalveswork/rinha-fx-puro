@@ -1,7 +1,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Clientes.ViewModelsLib.TransacaoNaHoraVM
-  ( TransacaoNaHora
+  ( TransacaoNaHora(TransacaoNaHora)
+  , valor
+  , tipo
+  , descricao
+  , realizada_em
   ) where
 
 import Data.Time
@@ -13,7 +17,7 @@ import Clientes.ViewModelsLib.TipoTransacaoVM (TipoTransacao)
 
 
 data TransacaoNaHora = TransacaoNaHora
-  { valor        :: Integer
+  { valor        :: Int
   , tipo         :: TipoTransacao
   , descricao    :: String
   , realizada_em :: UTCTime

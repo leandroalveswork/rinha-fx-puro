@@ -16,7 +16,7 @@ import Clientes.ViewModelsLib.TipoTransacaoVM (TipoTransacao)
 
 
 data InputTransacao = InputTransacao
-  { valor     :: Integer
+  { valor     :: Int
   , tipo      :: TipoTransacao
   , descricao :: String
   } deriving Generic
