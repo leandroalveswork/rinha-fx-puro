@@ -1,49 +1,65 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Clientes.ApiLib.ObterExtrato
   ( obterExtrato
   ) where
 
 import Data.ByteString                          (ByteString)
-import Control.Concurrent
+import Data.Text                                (Text, unpack)
 import Control.Exception                        (bracket)
 import Control.Monad.IO.Class
 import Data.Pool
 import Database.PostgreSQL.Simple
-import Network.HTTP.Client                      (newManager, defaultManagerSettings)
-import Network.Wai.Handler.Warp
 import Servant
-import Servant.Client
 import Data.Time                                (UTCTime)
+import Clientes.ViewModelsLib.TipoTransacaoVM   (unshowPerigoso)
 import Clientes.ViewModelsLib.InputTransacaoVM  (InputTransacao)
 import Clientes.ViewModelsLib.SaldoVM           (Saldo)
-import Clientes.ViewModelsLib.SaldoNaHoraVM     (SaldoNaHora)
-import Clientes.ViewModelsLib.ExtratoNaHoraVM   (ExtratoNaHora, saldo, ultimas_transacoes)
-import Clientes.ViewModelsLib.TransacaoNaHoraVM (TransacaoNaHora)
+import Clientes.ViewModelsLib.SaldoNaHoraVM     (SaldoNaHora(SaldoNaHora), total, limite, data_extrato)
+import Clientes.ViewModelsLib.ExtratoNaHoraVM   (ExtratoNaHora, ExtratoNaHora (ExtratoNaHora), saldo, ultimas_transacoes)
+import Clientes.ViewModelsLib.TransacaoNaHoraVM (TransacaoNaHora (TransacaoNaHora), valor, tipo, descricao, realizada_em)
 
 type DBConnectionString = ByteString
 
-obterExtrato :: Pool Connection -> Integer -> Handler ExtratoNaHora
+fromRowTransacao :: (Int, Text, Text, UTCTime) -> TransacaoNaHora
+fromRowTransacao (xvalor, xtipo, xdescricao, xrealizadaEm) =
+  TransacaoNaHora { valor        = xvalor
+                  , tipo         = (unshowPerigoso.unpack) xtipo
+                  , descricao    = unpack xdescricao
+                  , realizada_em = xrealizadaEm
+                  } 
+
+fromRowSaldo :: (Int, Int, UTCTime) -> SaldoNaHora
+fromRowSaldo (xsaldo, xlimite, xdataExtrato) =
+  SaldoNaHora { total = xsaldo
+              , limite = xlimite
+              , data_extrato = xdataExtrato
+              }
+
+obterExtrato :: Pool Connection -> Int -> Handler ExtratoNaHora
 obterExtrato conns idCliente = do
-  transacoes :: [TransacaoNaHora]
-  transacoes <- fmap (map fromOnly) . liftIO $
+  transacoes <- fmap (map fromRowTransacao) . liftIO $
     withResource conns $ \conn ->
-      query conn
-        "SELECT valor, tipo, descricao, realizada_em" ++
-        " FROM Transacoes WHERE id_cliente = ?" ++
-        " ORDER BY realizada_em DESC" ++
-        " LIMIT 10;"
-        ( idCliente )
-  saldos :: [SaldoNaHora]
-  saldos <- fmap (map fromOnly) . liftIO $
-    withResrouce conns $ \conn ->
-      query conn
-        "SELECT [total] = saldo, limite, data_extrato = NOW()" ++
-        " FROM Clientes WHERE id_cliente = ?"
-        ( idCliente )
+      (query conn
+        (  "SELECT valor, tipo, descricao, realizada_em"
+        <> " FROM Transacoes WHERE id_cliente = ?"
+        <> " ORDER BY realizada_em DESC"
+        <> " LIMIT 10;"
+        )
+        ( Only idCliente :: Only Int )
+        :: IO [(Int, Text, Text, UTCTime)])
+
+  saldos <- fmap (map fromRowSaldo) . liftIO $
+    withResource conns $ \conn ->
+      (query conn
+        (  "SELECT saldo, limite, data_extrato = NOW()"
+        <> " FROM Clientes WHERE id_cliente = ?"
+        )
+        ( Only idCliente :: Only Int )
+        :: IO [(Int, Int, UTCTime)])
+
   case saldos of
-    []        -> throwError (err404 ())
-    [saldo:_] -> return ExtratoNaHora { saldo , ultimas_transacoes = transacoes }
+    []         -> throwError err404
+    (xsaldo:_) -> return ExtratoNaHora { saldo = xsaldo , ultimas_transacoes = transacoes }
 

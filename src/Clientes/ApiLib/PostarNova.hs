@@ -1,35 +1,34 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Clientes.ApiLib.PostarNova
   ( postarNova
   ) where
 
 import Data.ByteString (ByteString)
+import Data.Text (Text, pack)
 import Control.Concurrent
 import Control.Exception (bracket)
 import Control.Monad.IO.Class
 import Data.Pool
 import Database.PostgreSQL.Simple
-import Network.HTTP.Client (newManager, defaultManagerSettings)
-import Network.Wai.Handler.Warp
 import Servant
-import Servant.Client
 import Clientes.ViewModelsLib.InputTransacaoVM (InputTransacao, valor, tipo, descricao)
-import Clientes.ViewModelsLib.SaldoVM          (Saldo)
+import Clientes.ViewModelsLib.SaldoVM          (Saldo, Saldo(Saldo), saldo, limite)
 import Clientes.ViewModelsLib.TipoTransacaoVM  (TipoTransacao, sinalDe)
 
-type DBConnectionString = ByteString
-
-postarNova :: Pool Connection -> Integer -> InputTransacao -> Handler Saldo
-postarNova conns idCliente inptTr = fmap (map fromOnly) . liftIO $
-                                      withResource conns $ \conn ->
-                                        query conn
-                                          "exec SP_NOVA_TRANSACAO ? ? ? ?"
-                                          ( idCliente
-                                          , valor inptTr * sinalDe tipo
-                                          , show.tipo inptTr
-                                          , descricao inptTr
-                                          )
+postarNova :: Pool Connection -> Int -> InputTransacao -> Handler Saldo
+postarNova conns idCliente inptTr = do
+  saldos <- liftIO $
+    withResource conns $ \conn ->
+      (query conn
+        "exec SP_NOVA_TRANSACAO ? ? ? ?"
+        ( idCliente                              :: Int
+        , (valor inptTr * (sinalDe.tipo) inptTr) :: Int
+        , (pack.show.tipo) inptTr                :: Text
+        , (pack.descricao) inptTr                :: Text
+        ) :: IO [(Int, Int)])
+  case saldos of
+    []         -> throwError err404
+    (xsaldo:_) -> return Saldo { saldo = fst xsaldo , limite = snd xsaldo }
 
