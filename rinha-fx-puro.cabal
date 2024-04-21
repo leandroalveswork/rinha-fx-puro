@@ -18,6 +18,15 @@ maintainer:         leandroprogramadoruxdesign@gmail.com
 
 library
     exposed-modules:  Clientes.ApiLib.Api
+                      , Clientes.ApiLib.ObterExtrato
+                      , Clientes.ApiLib.PostarNova
+                      , Clientes.ViewModelsLib.ExtratoNaHoraVM
+                      , Clientes.ViewModelsLib.InputTransacaoVM
+                      , Clientes.ViewModelsLib.SaldoNaHoraVM
+                      , Clientes.ViewModelsLib.SaldoVM
+                      , Clientes.ViewModelsLib.TipoTransacaoVM
+                      , Clientes.ViewModelsLib.TransacaoNaHoraVM
+                      , RepositoryLib.Repository
     build-depends:    base ^>= 4.16.4.0
                       , text >= 2.0.2
                       , aeson >= 2.2.1.0
@@ -30,7 +39,8 @@ library
                       , wai >= 3.2.4
                       , servant-server >= 0.20
                       , resource-pool >= 0.4.0.0
-                      , postgresql-simple >= 0.7.0.0
+                      , postgresql-simple >= 0.6.5.0
+
     hs-source-dirs:   src
     default-language: Haskell2010
 
@@ -51,9 +61,12 @@ executable rinha-fx-puro
     -- other-extensions:
     build-depends:    base ^>= 4.16.4.0
                       , rinha-fx-puro
+                      , bytestring >= 0.11.4.0
                       , warp >= 3.3.31
                       , wai >= 3.2.4
                       , servant-server >= 0.20
+                      , resource-pool >= 0.4.0.0
+                      , postgresql-simple >= 0.6.5.0
                       
     hs-source-dirs:   app
     default-language: Haskell2010
