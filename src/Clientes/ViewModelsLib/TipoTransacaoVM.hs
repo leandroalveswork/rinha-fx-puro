@@ -1,6 +1,7 @@
 module Clientes.ViewModelsLib.TipoTransacaoVM
   ( TipoTransacao
   , sinalDe
+  , unshowPerigoso
   ) where
 
 import Data.Time
@@ -27,6 +28,11 @@ instance Show TipoTransacao where
   show Credito = "c"
   show Debito  = "d"
 
-sinalDe :: TipoTransacao -> Integer
+unshowPerigoso :: String -> TipoTransacao
+unshowPerigoso "c" = Credito
+unshowPerigoso "d" = Debito
+unshowPerigoso _   = Debito
+
+sinalDe :: TipoTransacao -> Int
 sinalDe Credito = 1
 sinalDe Debito  = -1
