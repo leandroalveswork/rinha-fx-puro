@@ -32,7 +32,7 @@ migrateDB connstr = bracket (connectPostgreSQL connstr) close $ \conn -> do
     <> "   , valor        INTEGER NOT NULL"
     <> "   , tipo         VARCHAR(1) NOT NULL"
     <> "   , descricao    VARCHAR(10) NOT NULL"
-    <> "   , realizada_em TIMESTAMP NOT NULL DEFAULT NOW()"
+    <> "   , realizada_em TIMESTAMPTZ NOT NULL DEFAULT NOW()"
     <> "   );"
 
     <> " CREATE OR REPLACE PROCEDURE inserir_transacao("

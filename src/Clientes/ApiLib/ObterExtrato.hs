@@ -53,8 +53,8 @@ obterExtrato conns idCliente = do
   saldos <- fmap (map fromRowSaldo) . liftIO $
     withResource conns $ \conn ->
       (query conn
-        (  "SELECT saldo, limite, data_extrato = NOW()"
-        <> " FROM Clientes WHERE id_cliente = ?;"
+        (  "SELECT saldo, limite, NOW()"
+        <> " FROM Clientes WHERE id = ?;"
         )
         ( Only idCliente :: Only Int )
         :: IO [(Int, Int, UTCTime)])
