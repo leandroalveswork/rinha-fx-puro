@@ -22,7 +22,7 @@ postarNova conns idCliente inptTr = do
   saldos <- liftIO $
     withResource conns $ \conn ->
       (query conn
-        "exec SP_NOVA_TRANSACAO ? ? ? ?"
+        "exec sp_inserir_transacao ? ? ? ?"
         ( idCliente                              :: Int
         , (valor inptTr * (sinalDe.tipo) inptTr) :: Int
         , (pack.show.tipo) inptTr                :: Text
