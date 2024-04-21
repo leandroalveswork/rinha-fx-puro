@@ -5,15 +5,21 @@ module RepositoryLib.Repository
   ( migrateDB
   , initConnectionPool
   , DBConnectionString
+  , dotenvConnstr
   ) where
 
 import Data.ByteString             (ByteString)
+import Data.List
 import Control.Concurrent
 import Control.Exception           (bracket)
 import Control.Monad.IO.Class
+import Control.Applicative
 import Data.Pool
 import Database.PostgreSQL.Simple
 import Servant
+import Configuration.Dotenv        (parseFile)
+import Data.Maybe (fromMaybe)
+import Data.String (IsString(fromString))
 
 type DBConnectionString = ByteString
 
@@ -83,3 +89,24 @@ initConnectionPool connStr =
              60 -- unused connections are kept open for a minute
              10 -- max. 10 connections open per stripe
 
+dotenvConnstr :: IO DBConnectionString
+dotenvConnstr = do
+  vars <- parseFile ".env"
+  let dbHost =     lookup "POSTGRES_HOST"     vars
+  let dbInstance = lookup "POSTGRES_INSTANCE" vars
+  let dbUser =     lookup "POSTGRES_USER"     vars
+  let dbPassword = lookup "POSTGRES_PASSWORD" vars
+  let dbPort  =    Just (fromMaybe "5432" (lookup "POSTGRES_PORT" vars))
+  let connstr = foldl
+                  (\acc curt -> (<>) <$> acc <*> curt)
+                  (Just mempty)
+                  [ Just "host=",      dbHost
+                  , Just " dbname=",   dbInstance
+                  , Just " user=",     dbUser
+                  , Just " password=", dbPassword
+                  , Just " port=",     dbPort
+                  ]
+  
+  case connstr of
+    Nothing        -> fail "Falha ao ler as variáveis de conexão com banco de dados"
+    Just okConnstr -> return (fromString okConnstr)
