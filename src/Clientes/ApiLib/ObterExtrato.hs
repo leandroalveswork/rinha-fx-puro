@@ -54,7 +54,7 @@ obterExtrato conns idCliente = do
     withResource conns $ \conn ->
       (query conn
         (  "SELECT saldo, limite, data_extrato = NOW()"
-        <> " FROM Clientes WHERE id_cliente = ?"
+        <> " FROM Clientes WHERE id_cliente = ?;"
         )
         ( Only idCliente :: Only Int )
         :: IO [(Int, Int, UTCTime)])
