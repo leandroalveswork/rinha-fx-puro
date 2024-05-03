@@ -1,0 +1,63 @@
+version: "3.5"
+
+services:
+  api01: &api
+    build: .
+    hostname: api01
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_INSTANCE=rinhafx
+      - POSTGRES_USER=rinha1234
+      - POSTGRES_PASSWORD=1234
+    expose: "80"
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.35"
+          memory: "50MB"
+  
+  api02:
+    <<: *api
+    hostname: api02
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_INSTANCE=rinhafx
+      - POSTGRES_USER=rinha1234
+      - POSTGRES_PASSWORD=1234
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.35"
+          memory: "300MB"
+
+  db:
+    image: postgres:16.2
+    hostname: db
+    environment:
+      POSTGRES_USER: rinha1234
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: rinhafx
+    ports:
+      - "5432:5432"
+    command: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.8"
+          memory: "200MB"
+
+networks:
+  default:
+    driver: bridge
+    name: rinha-nginx-2024q1
+
