@@ -8,7 +8,6 @@ import Data.Pool
 import Database.PostgreSQL.Simple
 import Clientes.ApiLib.Api         (ClientesApi, clientesServidor)
 import RepositoryLib.Repository    (migrateDB, initConnectionPool, DBConnectionString, dotenvConnstr)
-import Data.String (IsString(fromString))
 
 proxyServidor :: Proxy ClientesApi
 proxyServidor = Proxy
@@ -21,4 +20,4 @@ main = do
   connstr <- dotenvConnstr
   pool <- initConnectionPool connstr
   migrateDB connstr
-  run 9999 (serve proxyServidor $ clientesServidor pool)
+  run 80 (serve proxyServidor $ clientesServidor pool)

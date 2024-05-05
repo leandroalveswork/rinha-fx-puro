@@ -1,3 +1,5 @@
 dist-newstyle/
 
 .env
+
+bin/rinha-fx-puro

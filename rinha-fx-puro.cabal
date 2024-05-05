@@ -16,7 +16,7 @@ version:            0.1.0.0
 author:             leandroalveswork
 maintainer:         leandroprogramadoruxdesign@gmail.com
 
-library
+library rinha-fx-puro-lib
     exposed-modules:  Clientes.ApiLib.Api
                       , Clientes.ApiLib.ObterExtrato
                       , Clientes.ApiLib.PostarNova
@@ -61,7 +61,7 @@ executable rinha-fx-puro
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:    base ^>= 4.16.4.0
-                      , rinha-fx-puro
+                      , rinha-fx-puro-lib
                       , bytestring >= 0.11.4.0
                       , warp >= 3.3.31
                       , wai >= 3.2.4
