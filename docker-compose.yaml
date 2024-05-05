@@ -4,45 +4,59 @@ services:
   api01: &api
     build: .
     hostname: api01
-    environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_INSTANCE=rinhafx
-      - POSTGRES_USER=rinha1234
-      - POSTGRES_PASSWORD=1234
-    expose: "80"
+    expose:
+      - 80
     depends_on:
       - db
+    volumes:
+      - postgres-storage:/var/run/postgresql
     deploy:
       resources:
         limits:
-          cpus: "0.35"
-          memory: "50MB"
+          cpus: "0.2"
+          memory: "100MB"
   
   api02:
     <<: *api
     hostname: api02
-    environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_INSTANCE=rinhafx
-      - POSTGRES_USER=rinha1234
-      - POSTGRES_PASSWORD=1234
     depends_on:
       - db
+    volumes:
+      - postgres-storage:/var/run/postgresql
+    expose:
+      - 80
     deploy:
       resources:
         limits:
-          cpus: "0.35"
-          memory: "300MB"
+          cpus: "0.4"
+          memory: "250MB"
+
+  nginx:
+    image: nginx:1.25
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api01
+      - api02
+    ports:
+      - "9999:9999"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "10MB"
 
   db:
     image: postgres:16.2
     hostname: db
     environment:
-      POSTGRES_USER: rinha1234
-      POSTGRES_PASSWORD: 1234
       POSTGRES_DB: rinhafx
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1234
     ports:
       - "5432:5432"
+    volumes:
+      - postgres-storage:/var/run/postgresql
     command: postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
@@ -53,11 +67,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.8"
-          memory: "200MB"
+          cpus: "0.7"
+          memory: "190MB"
 
 networks:
   default:
     driver: bridge
     name: rinha-nginx-2024q1
 
+volumes:
+  postgres-storage:
