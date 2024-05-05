@@ -18,8 +18,8 @@ import Data.Pool
 import Database.PostgreSQL.Simple
 import Servant
 import Configuration.Dotenv        (parseFile)
-import Data.Maybe (fromMaybe)
-import Data.String (IsString(fromString))
+import Data.Maybe                  (fromMaybe)
+import Data.String                 (IsString(fromString))
 
 type DBConnectionString = ByteString
 
