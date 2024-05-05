@@ -7,7 +7,8 @@ services:
     expose:
       - 80
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - postgres-storage:/var/run/postgresql
     deploy:
@@ -20,7 +21,8 @@ services:
     <<: *api
     hostname: api02
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - postgres-storage:/var/run/postgresql
     expose:
